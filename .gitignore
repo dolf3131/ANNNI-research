@@ -3,8 +3,10 @@ __pycache__/
 .DS_Store
 .omc
 
-# The paper is a separate deliverable and is not distributed with the code.
-manuscript/
+# Only the finished paper is distributed; its source, its figures and the
+# LaTeX build artefacts are not.
+manuscript/*
+!manuscript/paper.pdf
 
 # Computed output. Every figure and table can be regenerated from the code;
 # shipping the caches would only make the repository heavy and let a stale

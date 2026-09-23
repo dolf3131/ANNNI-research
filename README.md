@@ -5,11 +5,11 @@ Q-SITE Hackathon 2026 — Open Challenge, Scientific track.
 Jeongbin Jo · Department of Physics, and School of Mathematics and Computing
 (Computational Science and Engineering), Yonsei University · jeongbin033@yonsei.ac.kr
 
+**Paper:** [`manuscript/paper.pdf`](manuscript/paper.pdf) — 9 pages, REVTeX
 **Notebook:** [`annni_circuits.ipynb`](annni_circuits.ipynb) — the circuit study end to end, self-contained
 
-This repository holds the code. The write-up is submitted separately; the
-numbers quoted below are from it, and every one of them is reproducible from
-what is here.
+Every number quoted below is in the paper, and every one of them regenerates
+from the code here.
 
 ---
 
@@ -74,9 +74,9 @@ To regenerate the figures:
     python code/run_map_echo.py      # the circuit phase map, ~18 min
 
 Each writes its data to `results/` and its figure to `manuscript/`, creating
-both if needed. Neither directory is tracked here, so a fresh clone recomputes
-rather than redrawing; once a run has completed, `--plot-only` on either script
-redraws from the cached `.npz` without recomputing.
+either if needed. Neither is tracked here, so a fresh clone recomputes rather
+than redrawing; once a run has completed, `--plot-only` on either script
+redraws from its cache without recomputing.
 
 `code/tune.py` reproduces the scans behind the tables; it takes the readout and
 the noise condition as arguments, because that choice is one 2×2:
@@ -87,9 +87,9 @@ the noise condition as arguments, because that choice is one 2×2:
 ## Layout
 
     code/         everything executable
+    manuscript/   paper.pdf; its source and figures are not distributed
     results/      created by a run: the .npz it wrote   (not tracked)
     logs/         created by a run: its stdout          (not tracked)
-    manuscript/   figure output                          (not tracked)
 
 Inside `code/`: `annni.py` (model, exact diagonalisation, analytic boundaries),
 `circuits.py` (Trotter steps, reference state, both readouts, both shot
