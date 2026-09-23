@@ -1,0 +1,6 @@
+# Tested with Python 3.12.13. Python 3.10 or newer is required: on 3.9 the
+# installed PennyLane fails to import against the available autoray.
+pennylane==0.45.1
+numpy==2.5.3
+scipy==1.18.1
+matplotlib==3.11.2

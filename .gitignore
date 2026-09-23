@@ -1,0 +1,16 @@
+__pycache__/
+.venv/
+.DS_Store
+.omc
+
+# The paper is a separate deliverable and is not distributed with the code.
+manuscript/
+
+# Computed output. Every figure and table can be regenerated from the code;
+# shipping the caches would only make the repository heavy and let a stale
+# .npz masquerade as a fresh result.
+results/
+logs/
+
+# personal working notes, not part of the submission
+Q-SITE-2026-info.md
