@@ -16,3 +16,7 @@ logs/
 
 # personal working notes, not part of the submission
 Q-SITE-2026-info.md
+
+# The notebook writes here too; only the paper is distributed, so a reduced
+# notebook run can never reach the repository. It can still clobber a local
+# figure, which is why every run script takes --plot-only.

@@ -5,6 +5,7 @@ field above 2*pi/T against two of six for the Hadamard test. Gamma is measured
 at each error rate rather than extrapolated, because Gamma/p drifts by a third
 over the range studied.
 """
+import sys
 import time
 from pathlib import Path
 import numpy as np
@@ -46,33 +47,44 @@ def measure_gamma(p, nt=160):
 
 
 print(f"echo resolution: ref5, order={ORDER}, filter={RELF}", flush=True)
-cal = {}
-for p in P_LIST:
-    g, r = measure_gamma(p)
-    cal[p] = g
-    print(f"  p={p:.5f} Gamma={g:.4f} (ratio {g/p:6.1f}) resid {r:.3f}", flush=True)
+PLOT_ONLY = "--plot-only" in sys.argv
 
-gaps = np.array([np.diff(np.sort(eigsh(
-    hamiltonian(N, KAPPA, h).sparse_matrix(wire_order=range(N)).tocsc().real,
-    k=2, which="SA", return_eigenvectors=False))[:2])[0] for h in HS])
+if PLOT_ONLY:
+    d = np.load(RESULTS / "res_echo.npz")
+    HS, gaps = d["HS"], d["gaps"]
+    P_LIST = list(d["P_LIST"])
+    res = {p: d[f"est_{p}"] for p in P_LIST}
+    meta = {p: (float(g), 0, float(d[f"dE_{p}"])) for p, g in zip(P_LIST, d["gammas"])}
+    print(f"replotting res_echo.npz: {len(P_LIST)} rates, {len(HS)} fields")
+else:
+    cal = {}
+    for p in P_LIST:
+        g, r = measure_gamma(p)
+        cal[p] = g
+        print(f"  p={p:.5f} Gamma={g:.4f} (ratio {g/p:6.1f}) resid {r:.3f}", flush=True)
 
-res, meta = {}, {}
-for p in P_LIST:
-    gamma = cal[p]
-    nt = int(np.clip(LOG_SNR / gamma / DT, 48, 1400))
-    dE = 2 * np.pi / (nt * DT)
-    meta[p] = (gamma, nt, dE)
-    est, t0 = [], time.time()
-    for h in HS:
-        base = echo_signal(N, KAPPA, h, nt, DT, p)
-        est.append(np.median([gap_from_echo(sample_probability(base, SHOTS, np.random.default_rng(1000 + s)),
-                                       DT, ORDER, RELF) for s in SEEDS]))
-    res[p] = np.array(est)
-    print(f"p={p:.5f} Gamma={gamma:.4f} nt={nt:5d} dE={dE:.4f} [{(time.time()-t0)/60:.1f}m]",
-          flush=True)
-    np.savez(RESULTS / "res_echo.npz", HS=HS, gaps=gaps, P_LIST=P_LIST,
-             gammas=[cal[q] for q in P_LIST],
-             **{f"est_{q}": res[q] for q in res}, **{f"dE_{q}": meta[q][2] for q in meta})
+    gaps = np.array([np.diff(np.sort(eigsh(
+        hamiltonian(N, KAPPA, h).sparse_matrix(wire_order=range(N)).tocsc().real,
+        k=2, which="SA", return_eigenvectors=False))[:2])[0] for h in HS])
+
+    res, meta = {}, {}
+    for p in P_LIST:
+        gamma = cal[p]
+        nt = int(np.clip(LOG_SNR / gamma / DT, 48, 1400))
+        dE = 2 * np.pi / (nt * DT)
+        meta[p] = (gamma, nt, dE)
+        est, t0 = [], time.time()
+        for h in HS:
+            base = echo_signal(N, KAPPA, h, nt, DT, p)
+            est.append(np.median([gap_from_echo(sample_probability(base, SHOTS, np.random.default_rng(1000 + s)),
+                                           DT, ORDER, RELF) for s in SEEDS]))
+        res[p] = np.array(est)
+        print(f"p={p:.5f} Gamma={gamma:.4f} nt={nt:5d} dE={dE:.4f} [{(time.time()-t0)/60:.1f}m]",
+              flush=True)
+        np.savez(RESULTS / "res_echo.npz", HS=HS, gaps=gaps, P_LIST=P_LIST,
+                 gammas=[cal[q] for q in P_LIST],
+                 **{f"est_{q}": res[q] for q in res}, **{f"dE_{q}": meta[q][2] for q in meta})
+
 
 print()
 agree = total = 0
